@@ -242,3 +242,138 @@ for number in 1...100 {
     print(number)
     }
 }
+
+
+//
+//How to return values from functions
+
+func rollDice() -> Int {
+    return Int.random(in:1...6)
+}
+
+let rollDiceNo = rollDice()
+print(rollDiceNo)
+
+func doesContainSameLetters(text1:String, text2:String) -> Bool {
+    let sortedText1 = text1.sorted()
+    let sortedText2 = text2.sorted()
+    
+    return sortedText1 == sortedText2
+}
+
+print(doesContainSameLetters(text1: "jacob", text2: "caboj"))
+
+
+//if there is only one line in func which return value then we can exclude return keyword
+func pythagoras(a:Double, b:Double) -> Double {
+    sqrt(a*a + b*b)
+}
+
+let ic = pythagoras(a: 3, b: 4)
+ print(ic)
+
+//Tuple : usecase return multiple values from a function
+//in dictionaries swict can not knew ahead of time dictionary keys are present
+//dictionary might contain other hundred of others values
+
+func getUser() ->(firstName : String , lastName : String) {
+    (firstName : "kartik", lastName: "singh")
+}
+let users = getUser()
+print(users)
+
+//no need to give names
+func getUser1() -> (String, String){
+    ("jayesh", "kumar")
+}
+let user1 = getUser1()
+print("user name is \(user1.0) \(user1.1)")
+
+//destructuring
+let (firstName2 , secondName2) = getUser1()
+print("destructure name \(firstName2) \(secondName2)")
+
+//
+//How to customize parameter labels
+func isUpperCase(_ string : String) -> Bool{
+    string == string.uppercased()
+}
+
+isUpperCase("HELLO")
+//provide deafult value to parameters , giveing argument, parameter name
+//Parameter Labels: You can customize external parameter labels for readability or use an underscore _ to disable them
+func calculateTip(for bill : Int = 200){
+    print((bill)/10)
+}
+calculateTip(for: 100)
+calculateTip()
+
+//
+//How to handle errors in functions
+enum passwordErrors : Error{
+    case short , obvious
+}
+
+func checkPass(_ password : String) throws -> String {
+    if(password.count < 5){
+        throw passwordErrors.short
+    }
+    if(password == "12345"){
+        throw passwordErrors.obvious
+    }
+    if(password.count < 8){
+        return "short"
+    }else{
+        return "excellent"
+    }
+}
+
+
+let password = "12345"
+do{
+    let result = try checkPass(password)
+    
+}
+catch passwordErrors.obvious{
+    print("obvious error")
+}
+catch{
+    print("password error \(error.localizedDescription)")
+}
+
+
+//try! - do not require do catch block
+//means - i think this fn is safe to throw no errors otherwise code will crash
+
+//let result2 = try! checkPass(password)
+//print(result2)
+
+
+
+//Checkpoint 4
+enum squareRootError : Error {
+    case outOfBound , noRoot
+}
+
+func checkSquareRoot( _ number : Int) throws -> Int{
+    if(number < 1 || number > 10_000){
+        throw squareRootError.outOfBound
+    }
+    for num in 1...100{
+        if num * num == number {
+            return num
+        }
+    }
+    throw squareRootError.noRoot
+}
+
+do{
+   let result = try checkSquareRoot(10000)
+    print("sqrt of number is \(result)")
+}catch squareRootError.noRoot{
+    print("no root error")
+}catch squareRootError.outOfBound{
+    print("out of bound error")
+}catch {
+    print("error occured")
+}
