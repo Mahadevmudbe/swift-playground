@@ -377,3 +377,157 @@ do{
 }catch {
     print("error occured")
 }
+
+
+
+//How to create and use closures
+//assign funtionality directly to const or variable - swift give this a name closure expression means we created closure
+
+let sayHello = {
+print("hi")
+}
+
+sayHello()
+
+//closures which accept parameters
+//as our closures run between {}
+//so we write parameters type and return type in {}
+//in keyword => in keyword marks the end of parameters and return type and start of the body of the closure
+
+let sayHi = {
+    (name : String) -> String in
+    "hi \(name)"
+}
+
+print(sayHi("kartik")) // no parameter name- name: "kartik" written in closures it gets hidden
+
+//when we call sorted function it allow us to pass in custom sorting function
+let team = ["kartik", "suyesh" , "abhi" , "mahadev" , "rajesh" ,"raju"]
+let sortedTeam = team.sorted();
+print(sortedTeam)
+
+func captainFirstSortedTeam(firstName : String , secondName : String) -> Bool{
+    if(firstName == "rajesh"){
+        return true
+    }else if secondName == "rajesh" {
+        return false
+    }else{
+        return firstName < secondName
+    }
+}
+let captainFirstTeam = team.sorted(by: captainFirstSortedTeam)
+print(captainFirstTeam)
+
+//using closures
+let captainFirstTeamUsingClosure = team.sorted(
+    by: { (firstName : String , secondName : String) -> Bool in
+        if(firstName == "kartik"){
+            return true
+        }else if secondName == "kartik" {
+            return false
+        }else{
+            return firstName < secondName
+        }
+    }
+)
+print(captainFirstTeamUsingClosure)
+
+//
+
+//How to use trailing closures and shorthand syntax
+//as sorted by - expects exact two strings as parameters and bool as return type so as we know its expects exact params and return type so we can exclude them
+let captainFirstTeamUsingClosure2 = team.sorted(
+    by: { firstName, secondName in
+        if(firstName == "kartik"){
+            return true
+        }else if secondName == "kartik" {
+            return false
+        }else{
+            return firstName < secondName
+        }
+    }
+)
+
+//when one function expects another function as parameter like sorted does swift gives us specical syntax type called trailing clousure syntax
+//it mean by chunk and clsoing parentheses goes away
+let captainFirstTeamUsingClosure3 = team.sorted {firstName, secondName in
+        if(firstName == "kartik"){
+            return true
+        }else if secondName == "kartik" {
+            return false
+        }else{
+            return firstName < secondName
+        }
+    }
+
+//swift provides parameters name using shorthand syntax
+//with this we dont write (firstName, secondName in ) anymore we get automatic specially named variable counting from $0 $1 $2...
+
+let captainFirstTeamUsingClosure4 = team.sorted {
+        if($0 == "kartik"){
+            return true
+        }else if $1 == "kartik" {
+            return false
+        }else{
+            return $0 < $1
+        }
+    }
+//when to not use shorthand syntax
+//when body is too big , $0 $1.. used multiple times , more than three params
+
+//sort team which has first letter r
+let startWithR = team.filter {$0.hasPrefix("r")}
+print(startWithR)
+
+//
+//How to accept functions as parameters
+func makeArray(size :Int,using generator : ()-> Int ) -> [Int] {
+    var number = [Int]()
+    
+    for _ in 0..<size {
+        let newNumber  = generator()
+        number.append(newNumber)
+    }
+    return number
+}
+
+func generator() -> Int {
+    Int.random(in:1...40)
+}
+let array = makeArray(size : 12,using : generator )
+print(array)
+
+let array2 = makeArray(size:14) {  //its trailling closure : as When the last parameter is a closure Swift lets you: Move it outside parentheses Remove the using: label
+    Int.random(in:1...40)
+
+}
+print(array2)
+
+//example 2
+
+func doImportantWork(first : () -> Void , second : () -> Void , third : () -> Void){
+    print("starting first work")
+    first()
+    print("starting second work")
+    second()
+    print("starting third work")
+    third()
+}
+
+doImportantWork(first: {print("first work completed")}, second:{print("second work completed")} , third:{print("third work completed")})
+doImportantWork {print("first work completed")} second:{print("second work completed")} third:{print("third work completed")} //Only the first trailing closure can omit its parameter label.
+//All additional closures must keep their labels.
+
+
+//checkpoiht 5
+let luckyNumber = [2,7, 4, 38, 21, 16, 15, 12, 33, 31, 49]
+
+//let filterLuckNumbers = luckyNumber.filter {$0 % 2 != 0}
+//print(filterLuckNumbers)
+//
+//let sortedLuckNumbers = filterLuckNumbers.sorted {$0 < $1}
+//print(sortedLuckNumbers)
+//
+//sortedLuckNumbers.map {print("\($0) is a lucky Number")}
+luckyNumber.filter {$0 % 2 != 0}.sorted {$0 < $1} .map {print("\($0) is a lucky Number")}
+
