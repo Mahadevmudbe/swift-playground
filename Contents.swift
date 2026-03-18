@@ -531,3 +531,221 @@ let luckyNumber = [2,7, 4, 38, 21, 16, 15, 12, 33, 31, 49]
 //sortedLuckNumbers.map {print("\($0) is a lucky Number")}
 luckyNumber.filter {$0 % 2 != 0}.sorted {$0 < $1} .map {print("\($0) is a lucky Number")}
 
+
+
+//
+//How to create your own structs
+
+//struct let us create our own complex data type complete with our own variables and functions
+//start with capital letter because its a type which we are referring to like - Int Bool ...
+
+struct Employee {
+    let name : String   // we have variables and constants inside a struct we call it properties
+        var RemainingVacation : Int
+//    add mutating in front of the func to  if want to modify any variable
+    mutating func takeVacation(days : Int){   // func inside a struct we call it methods
+        if(RemainingVacation > days){
+            RemainingVacation -= days
+            print("going to the vacation")
+            print("ramaining vacation days \(RemainingVacation)")
+        }else{
+            print("oops no vacation left")
+        }
+    }
+    
+}
+
+var employee1 = Employee(name: "raju" , RemainingVacation: 12) //we call this intializer of struct, internally it calls init which provides more value to creatiom of struct
+employee1.takeVacation(days: 4) //as we are mutating values here so we cant use let for employee1 variable as we are changing underlying data of the struct as whole thing becames constant
+
+
+//
+//How to compute property values dynamically
+
+//struct have two kind of property
+//1. stored property : place a value into the struct directly
+//2. computed property : it recalculates the value of the property every time its accessed  .
+//means this computed properties are blend of stored properties and methods in that they are accessed like stored properties  but they weok like funtions
+ 
+struct Employee2 {
+    let name : String
+    var vacationAllocated : Int
+    var vacationTaken : Int = 0
+    
+    var vacationRemaining : Int { // computed property
+        get {                                          //getter to get value
+            vacationAllocated - vacationTaken
+        }
+        set {
+            vacationAllocated = vacationTaken + newValue //provided by swift inside setter  , whatever value we assign to vacationRemaning we be provided to newValue
+        }
+    }
+}
+
+var archer = Employee2(name:"ketan" , vacationAllocated: 14)
+
+archer.vacationTaken += 4
+archer.vacationRemaining = 7
+print(archer.vacationAllocated)
+
+//
+//How to take action when a property changes
+
+//swift let us create property observers whcih runs whenever property value changes
+//comes in two form -  did set observers runs after property changes and will set when about to change
+
+struct Game {
+    var score = 0 {
+        didSet {
+            print("Score is now \(score)")
+        }
+    }
+}
+
+var game = Game()
+game.score += 10
+game.score += 10
+
+game.score -= 1
+
+
+struct App {
+    var contacts = [String]() {
+        willSet {
+            print("Current value is : \(contacts)")
+            print("new value is : \(newValue)")
+        }
+        didSet {
+            print("there are now : \(contacts.count) contacts ")
+            print("old value was : \(oldValue)")
+        }
+    }
+}
+
+var app = App()
+app.contacts.append("a")
+app.contacts.append("b")
+
+
+//How to create custom initializers
+
+//var archer = Employee2(name:"ketan" , vacationAllocated: 14) //memberwise intializer
+
+struct Player {
+    let name : String
+    let number : Int
+    
+    init(name : String , number : Int){
+        self.name = name          //assign name parameter to self's name property
+        self.number = number
+    }
+}
+
+
+//
+//How to limit access to internal data using access control
+//by default swift let us access properties and methods inside structs freely sometimes we dont want this
+
+//private : dont let outside struct use this
+
+//filePrivate : dont let outside the current file use this
+ 
+//public : let anyone anywhere use this
+
+//private(set) : let anyone internally or externally read this property but only internal methods can write it
+
+struct BankAccount {
+    private(set) var funds : Int = 0
+    
+    mutating func deposit(amount : Int){
+        funds += amount
+    }
+    
+    mutating func withdraw(amount : Int) -> Bool{
+        if amount < funds {
+            funds -= amount
+            return true
+        }else {
+            return false
+        }
+    }
+    
+}
+
+var account = BankAccount()
+account.deposit(amount: 22)
+account.withdraw(amount: 2)
+print(account.funds)
+
+
+//
+//Static properties and methods
+//sometimes we want to add property or method to struct itself not to single instance of it, this let us access it directly
+//usecase : to store constant data has to be accessed in various places in my program
+
+struct School {
+    
+    static var studentCount = 0
+    
+    static func  add (student : String){
+        print("\(student) got enrolled")
+        studentCount += 1
+    }
+    
+}
+
+School.add(student : "rj")
+print(School.studentCount)
+
+
+//self (s = lowercase) means : the current value of struct                        // 55 , "Hello" , true
+//Self (S = capital) means : the current type of struct we are on right now       // Int , String , Bool
+
+struct Employee3 {
+    let usermane : String
+    let password : String
+    
+    static let example = Employee3(usermane: "m1", password: "M@000")
+}
+
+enum gearType {
+    case up , down
+}
+
+//checkpoint 6
+struct Car {
+    let model : String
+    let numberOfSeats : Int
+   private(set) var currentGear : Int
+    
+    mutating  func changeGear(gear : gearType){
+        if(gear == gearType.up){
+            if currentGear > 9 {
+                print("you are on top gear")
+            }else {
+                currentGear += 1
+                print("you are on \(currentGear) gear")
+
+            }
+        }else if(gear == gearType.down){
+            if currentGear < 2 {
+                print("you are on 1st gear")
+            }else{
+                currentGear -= 1
+                print("you are on \(currentGear) gear")
+
+            }
+        }
+    }
+}
+
+
+var swift = Car(model:"2015" , numberOfSeats: 5 , currentGear: 1)
+swift.changeGear(gear: gearType.down)
+
+swift.changeGear(gear: gearType.up)
+swift.changeGear(gear: gearType.up)
+swift.changeGear(gear: gearType.down)
+
+
+
