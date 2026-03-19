@@ -747,5 +747,197 @@ swift.changeGear(gear: gearType.up)
 swift.changeGear(gear: gearType.up)
 swift.changeGear(gear: gearType.down)
 
+//
+//How to create your own classes
+//second way of creating our own custom type of data
+
+//similarities bwtween classes and struct
+// 1. add  properties , methods, property observers, access control\
+// 2. create custom initializers to configure new instances
+
+// differences between struct and classes
+// 1. you can make one class build upon functionality of another class, a process called inheritance - you can inherit propeties and methods from parent class
+// 2. swift won't generate a memberwise initializer for a classes . - means either you have own custom initializers or provide your properties with default values
+// 3. if you copy an instance of a class, both copies share the same data.
+// 4. we can add deinitializer to run when the final copy is destroyed.
+// 5. constant class instances can have their variable properties changed.
+
+//swiftui uses claases intesively as change in one should reflect at others
+
+ 
+//How to make one class inherit from another
+//Inheritance
+//if we are sure our class does not support inheritance we can mark it as final
+class Employee4 {
+    let hours : Int
+    
+    init(hours : Int){
+        self.hours = hours
+    }
+    
+    func printSummary(){
+        print("i work \(hours) hours a day" )
+    }
+}
+
+final class Developer : Employee4 {  // final : class itself can inherit from other things but childs cant inherit Developer class
+    func work(){
+    print("i am a developer works for \(hours)")
+    }
+    
+   override func printSummary(){
+        print("i work \(hours) hours a day after that i study swift" )
+    }
+}
+
+class Manager : Employee4 {
+    func work(){
+        print("i am manager take meetings for \(hours)")
+    }
+    
+    func printSummary(time : Int){        //no override keyword needed as it accepts params and return values
+        print("i take meetings for \(hours) hours a day and study for \(time) hours" )
+       
+    }
+}
+
+let anshu = Developer(hours: 12)
+anshu.work()
+anshu.printSummary()
+
+let john = Manager(hours: 10)
+john.work()
+john.printSummary(time: 1)
 
 
+//
+//How to add initializers for classes
+//if child class has a custom initializers it should always call parent initializers after setting up it's own properties
+//class does not have memberwise initializers
+//so either have to write own initalizer or provide default values for all properties
+
+class Vehical {
+    let isElectric : Bool
+    
+    init(isElectric :Bool ){
+        self.isElectric = isElectric
+    }
+}
+
+class Car2 : Vehical {
+    let isConvertable : Bool
+    
+    init(isConvertable : Bool , isElectric:Bool){
+        self.isConvertable = isConvertable
+        super.init(isElectric:isElectric)
+    }
+}
+
+
+//
+//How to copy classes
+//all copies of class instance points to the same data , because of reference type
+
+class Username {
+    var username = "default"
+    
+    func copy() -> Username{   //makes deep copy - you need to handle creating a new instance and copy across all your data safely.
+        let user = Username()
+        user.username = username
+        return user
+    }
+}
+
+var username1 = Username()
+var username2 = username1
+username2.username = "username2"
+print(username1.username)
+print(username2.username)
+
+//if we want to make a unique copy of a class instance  called deep copy
+
+var username3 = Username()
+username3 = username1.copy()
+username3.username = "hello"
+print(username1.username)
+print(username3.username)
+
+
+
+//How to create a deinitializer for a class
+// 1. you don't use func with deinitializer
+// 2. deinitializer can never take parameters or return data
+// 3. deinitalizers run when the last copy of class instance is destroyed
+// 4. we never call deinitializers directly , system call them for us
+// 5. struct do not have deintializers, because we cant copy them they are always unique
+ 
+class Destination {
+    var number : Int
+    
+    init(number : Int){
+        self.number = number
+        print("init \(number) number")
+    }
+    
+    deinit {
+        print("deinitializer \(number) instance")
+    }
+}
+
+var Destinations = [Destination]()
+
+for i in 1...3{
+    var destinationNumber = Destination(number : i)
+    print("destination \(destinationNumber.number) instance is created")
+    Destinations.append(destinationNumber)   // deinit will not run because we have associated with it in array
+}
+
+print("loop is finished")
+Destinations.removeAll()  //deinit will get call because no reference to data anymore
+print("Array is clear")
+
+
+
+//How to work with variables inside classes
+
+//why class do not need mutating in from of func?
+
+//chekpoint 7
+
+class Animal {
+    var legs : Int
+    
+    init(noOfLegs : Int){
+        print("parent init called")
+
+        self.legs = noOfLegs
+    }
+}
+
+class Dog : Animal {
+    
+    func speak(){
+        print("dog barks")
+    }
+}
+
+class Corgi : Dog {
+    func speak(bark : String){
+        print("corgin barks \(bark)")
+    }
+    
+   override init(noOfLegs : Int){
+       print("override init called")
+        super.init(noOfLegs: noOfLegs)
+    }
+}
+
+class Poodle : Dog {
+    func Speak(bark : String){
+        print("poodle barks \(bark)")
+    }
+}
+
+var corgi1 = Corgi(noOfLegs : 8)
+print(corgi1.legs)
+corgi1.speak(bark: "loudly")
